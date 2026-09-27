@@ -118,7 +118,7 @@ You have two flexible pairing methods:
 
 ## 🐙 GitHub Repository
 
-Repository URL: **[https://github.com/s4killer66-afk/astro-bot](https://github.com/s4killer66-afk/astro-bot)**
+Repository URL: **[https://github.com/a4hamza/astro-bot-](https://github.com/a4hamza/astro-bot-)**
 
 To pull or push future updates:
 ```bash

@@ -27,6 +27,7 @@ class AstroBot {
     this.saveCreds = null;
     this.cachedBuffers = null;
     this.cachedThumbs = null;
+    this.processedMsgKeys = new Set();
   }
 
   // Pre-load assets and thumbnails into memory once to ensure 0ms disk I/O and bypass native image decoders
@@ -93,6 +94,14 @@ class AstroBot {
     }
 
     try {
+      if (this.sock) {
+        try {
+          this.sock.ev.removeAllListeners();
+          this.sock.end(undefined);
+        } catch (e) {}
+        this.sock = null;
+      }
+
       if (!fs.existsSync(CONFIG.SESSION_DIR)) {
         fs.mkdirSync(CONFIG.SESSION_DIR, { recursive: true });
       }
@@ -177,6 +186,25 @@ class AstroBot {
       const remoteJid = msg.key?.remoteJid;
       if (!remoteJid) return;
 
+      // STRICT DEDUPLICATION: Prevent duplicate triggers from notify + append upserts
+      const msgId = msg.key?.id;
+      if (!msgId) return;
+
+      if (this.processedMsgKeys.has(msgId)) {
+        return;
+      }
+      this.processedMsgKeys.add(msgId);
+      if (this.processedMsgKeys.size > 300) {
+        const oldest = this.processedMsgKeys.values().next().value;
+        this.processedMsgKeys.delete(oldest);
+      }
+
+      // Ignore messages older than 60 seconds (prevents replay storms after reconnect)
+      const msgTimestamp = Number(msg.messageTimestamp) * 1000;
+      if (msgTimestamp && Date.now() - msgTimestamp > 60000) {
+        return;
+      }
+
       // STRICT RULE 1: PRIVATE DMS ONLY (Never work in group chats or broadcasts)
       if (remoteJid.endsWith('@g.us') || remoteJid === 'status@broadcast' || remoteJid.includes('@newsletter')) {
         return;
@@ -235,17 +263,16 @@ class AstroBot {
         }
       }
 
-      // Safe delivery helper: sends to targetJid and also attempts remoteJid if different
+      // Single-delivery sender: sends strictly ONCE to targetJid, fallbacks to remoteJid ONLY on failure
       const sendReply = async (content) => {
         try {
-          await this.sock.sendMessage(targetJid, content);
-        } catch (e) {
-          this.addLog('warning', `Failed sending to target ${targetJid}: ${e.message}`);
-        }
-        if (targetJid !== remoteJid) {
-          try {
-            await this.sock.sendMessage(remoteJid, content);
-          } catch (e) {}
+          return await this.sock.sendMessage(targetJid, content);
+        } catch (err) {
+          this.addLog('warning', `Failed sending to target ${targetJid}: ${err.message}. Retrying fallback...`);
+          if (targetJid !== remoteJid) {
+            return await this.sock.sendMessage(remoteJid, content);
+          }
+          throw err;
         }
       };
 

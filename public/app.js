@@ -262,10 +262,14 @@ async function runSimCommand(cmd) {
     const data = await res.json();
 
     if (data.type === 'image') {
-      appendBotBubble(`
+      let content = `
         <small style="color: #00d2ff; font-weight: 600;">[Image Sent - No Mentions]</small><br>
         <img src="${data.imageUrl}" alt="${data.title}" />
-      `);
+      `;
+      if (data.caption) {
+        content += `<div style="margin-top: 8px; line-height: 1.4;">${formatWhatsAppText(data.caption)}</div>`;
+      }
+      appendBotBubble(content);
     } else {
       appendBotBubble(formatWhatsAppText(data.response));
     }

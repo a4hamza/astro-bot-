@@ -36,11 +36,13 @@ class AstroBot {
         pak: this.getImageBuffer(CONFIG.ASSETS.PAK),
         ph: this.getImageBuffer(CONFIG.ASSETS.PH),
         inter: this.getImageBuffer(CONFIG.ASSETS.INTER),
+        pay: this.getImageBuffer(CONFIG.ASSETS.PAY),
       };
       this.cachedThumbs = {
         pak: this.getThumbBuffer(CONFIG.ASSETS.PAK_THUMB),
         ph: this.getThumbBuffer(CONFIG.ASSETS.PH_THUMB),
         inter: this.getThumbBuffer(CONFIG.ASSETS.INTER_THUMB),
+        pay: this.getThumbBuffer(CONFIG.ASSETS.PAY_THUMB),
       };
       this.addLog('info', 'Assets & thumbnails pre-cached in RAM for instant zero-latency responses.');
     } catch (e) {
@@ -300,11 +302,15 @@ class AstroBot {
         });
         this.addLog('success', `International list sent successfully to: ${targetJid}`);
       } else if (cmd === '.pay') {
-        this.addLog('command', `Sending Payment Methods to: ${targetJid}`);
+        this.addLog('command', `Sending Payment Methods with QR to: ${targetJid}`);
+        const imageBuffer = this.cachedBuffers?.pay || this.getImageBuffer(CONFIG.ASSETS.PAY);
+        const thumbBuffer = this.cachedThumbs?.pay || this.getThumbBuffer(CONFIG.ASSETS.PAY_THUMB);
         await sendReply({
-          text: CONFIG.PAYMENT_INFO,
+          image: imageBuffer,
+          caption: CONFIG.PAYMENT_INFO,
+          jpegThumbnail: thumbBuffer,
         });
-        this.addLog('success', `Payment methods sent successfully to: ${targetJid}`);
+        this.addLog('success', `Payment methods with QR sent successfully to: ${targetJid}`);
       } else if (cmd === '.menu' || cmd === '.help') {
         this.addLog('command', `Sending Menu to: ${targetJid}`);
         await sendReply({
@@ -397,8 +403,10 @@ class AstroBot {
     }
     if (cleanCmd === '.pay') {
       return {
-        type: 'text',
-        response: CONFIG.PAYMENT_INFO,
+        type: 'image',
+        imageUrl: '/assets/pay.jpg',
+        title: 'Astro Payment Methods (Scan QR)',
+        caption: CONFIG.PAYMENT_INFO,
       };
     }
     if (cleanCmd === '.menu' || cleanCmd === '.help') {
@@ -426,19 +434,28 @@ class AstroBot {
 
     if (cleanCmd === '.pak') {
       const buffer = this.cachedBuffers?.pak || this.getImageBuffer(CONFIG.ASSETS.PAK);
-      await this.sock.sendMessage(targetJid, { image: buffer });
+      const thumb = this.cachedThumbs?.pak || this.getThumbBuffer(CONFIG.ASSETS.PAK_THUMB);
+      await this.sock.sendMessage(targetJid, { image: buffer, jpegThumbnail: thumb });
       return 'Sent Pak Region image (.pak) to your WhatsApp!';
     } else if (cleanCmd === '.ph') {
       const buffer = this.cachedBuffers?.ph || this.getImageBuffer(CONFIG.ASSETS.PH);
-      await this.sock.sendMessage(targetJid, { image: buffer });
+      const thumb = this.cachedThumbs?.ph || this.getThumbBuffer(CONFIG.ASSETS.PH_THUMB);
+      await this.sock.sendMessage(targetJid, { image: buffer, jpegThumbnail: thumb });
       return 'Sent PH Region image (.ph) to your WhatsApp!';
     } else if (cleanCmd === '.inter') {
       const buffer = this.cachedBuffers?.inter || this.getImageBuffer(CONFIG.ASSETS.INTER);
-      await this.sock.sendMessage(targetJid, { image: buffer });
+      const thumb = this.cachedThumbs?.inter || this.getThumbBuffer(CONFIG.ASSETS.INTER_THUMB);
+      await this.sock.sendMessage(targetJid, { image: buffer, jpegThumbnail: thumb });
       return 'Sent International image (.inter) to your WhatsApp!';
     } else if (cleanCmd === '.pay') {
-      await this.sock.sendMessage(targetJid, { text: CONFIG.PAYMENT_INFO });
-      return 'Sent Payment Methods (.pay) to your WhatsApp!';
+      const buffer = this.cachedBuffers?.pay || this.getImageBuffer(CONFIG.ASSETS.PAY);
+      const thumb = this.cachedThumbs?.pay || this.getThumbBuffer(CONFIG.ASSETS.PAY_THUMB);
+      await this.sock.sendMessage(targetJid, {
+        image: buffer,
+        caption: CONFIG.PAYMENT_INFO,
+        jpegThumbnail: thumb,
+      });
+      return 'Sent Payment Methods with image (.pay) to your WhatsApp!';
     } else {
       await this.sock.sendMessage(targetJid, { text: CONFIG.MENU_TEXT });
       return 'Sent Menu (.menu) to your WhatsApp!';

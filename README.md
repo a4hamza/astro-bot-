@@ -25,7 +25,7 @@ An ultra-lightweight, high-performance WhatsApp self-assistant bot tailored for 
 | `.pak` | Pakistan Region Price List | Sends Red MLBB Pak Region banner |
 | `.ph` | Philippines Region Price List | Sends Purple MLBB PH Region banner |
 | `.inter` | International Diamonds List | Sends Blue MLBB International banner |
-| `.pay` | Astro Payment Details | Sends Easypaisa, Jazzcash, Merchant Till ID & Binance Pay |
+| `.pay` | Astro Payment Details | Sends Payment QR code banner + Easypaisa & Jazzcash text |
 | `.bot on` | Activate Bot | Enables command responses |
 | `.bot off` | Pause Bot | Pauses command responses |
 | `.menu` | View Menu | Displays full list of commands |
@@ -36,6 +36,8 @@ An ultra-lightweight, high-performance WhatsApp self-assistant bot tailored for 
 ## 💳 Payment Method Format (.pay)
 
 ```text
+[Attached: Astro Payment QR Code Banner]
+
 💳 ASTRO PAYMENT METHODS
 
 🟢 Easypaisa
@@ -45,13 +47,6 @@ An ultra-lightweight, high-performance WhatsApp self-assistant bot tailored for 
 🟠 Jazzcash
 📱 03345655395
 👤 Nabeel Azhar
-
-🏪 By Merchant Payment
-🔢 Till ID: 999213495
-🏷️ Astro Gaming Store
-
-🟡 Binance Pay / NayaPay
-📞 Contact: +92 341 8109808
 
 Tap number to copy. Send screenshot after payment!
 ```

@@ -15,12 +15,14 @@ export const CONFIG = {
     PAK: path.join(ROOT_DIR, 'assets', 'pak.jpg'),
     PH: path.join(ROOT_DIR, 'assets', 'ph.jpg'),
     INTER: path.join(ROOT_DIR, 'assets', 'inter.jpg'),
+    PAY: path.join(ROOT_DIR, 'assets', 'pay.jpg'),
     PAK_THUMB: path.join(ROOT_DIR, 'assets', 'pak_thumb.jpg'),
     PH_THUMB: path.join(ROOT_DIR, 'assets', 'ph_thumb.jpg'),
     INTER_THUMB: path.join(ROOT_DIR, 'assets', 'inter_thumb.jpg'),
+    PAY_THUMB: path.join(ROOT_DIR, 'assets', 'pay_thumb.jpg'),
   },
 
-  // Payment details provided by user
+  // Payment details provided by user (Easypaisa and Jazzcash only)
   PAYMENT_INFO: `💳 ASTRO PAYMENT METHODS
 
 🟢 Easypaisa
@@ -30,13 +32,6 @@ export const CONFIG = {
 🟠 Jazzcash
 📱 03345655395
 👤 Nabeel Azhar
-
-🏪 By Merchant Payment
-🔢 Till ID: 999213495
-🏷️ Astro Gaming Store
-
-🟡 Binance Pay / NayaPay
-📞 Contact: +92 341 8109808
 
 Tap number to copy. Send screenshot after payment!`,
 
